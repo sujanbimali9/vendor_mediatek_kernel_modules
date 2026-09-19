@@ -76,8 +76,10 @@ static struct proc_dir_entry *proc_root;
 #include <platform/mtk_platform_common/mtk_platform_irq_trace.h>
 #endif /* CONFIG_MALI_MTK_IRQ_TRACE */
 
+#if IS_ENABLED(CONFIG_MTK_IRQ_DBG)
 #include <linux/of_irq.h>
 extern void mt_irq_dump_status(unsigned int irq);
+#endif
 
 static bool mfg_powered;
 static DEFINE_MUTEX(mfg_pm_lock);
@@ -339,12 +341,14 @@ void mtk_debug_dump_gic_status(struct kbase_device *kbdev)
 	unsigned int irq = 0;
 	if(kbdev && kbdev->dev && kbdev->dev->of_node) {
 		/* Dump gic information */
+#if IS_ENABLED(CONFIG_MTK_IRQ_DBG)
 		for (i = 0; i < 3; i++) {
 			/* 0: GPU, 1: MMU, 2: JOB */
 			irq = irq_of_parse_and_map(kbdev->dev->of_node, i);
 			if (irq)
 				mt_irq_dump_status(irq);
 		}
+#endif
 	}
 }
 
